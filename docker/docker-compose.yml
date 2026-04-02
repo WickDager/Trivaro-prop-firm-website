@@ -1,0 +1,79 @@
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:6.0
+    container_name: trivaro-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: trivaro
+      MONGO_INITDB_ROOT_PASSWORD: trivaro123
+      MONGO_INITDB_DATABASE: trivaro
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - trivaro-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: trivaro-redis
+    restart: always
+    command: redis-server --requirepass trivaro123
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - trivaro-network
+
+  # Backend API
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: trivaro-backend
+    restart: always
+    environment:
+      - MONGODB_URI=mongodb://trivaro:trivaro123@mongodb:27017/trivaro?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=trivaro123
+      - FRONTEND_URL=http://localhost:3000
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ../backend/logs:/app/logs
+      - ../backend/uploads:/app/uploads
+    networks:
+      - trivaro-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: trivaro-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - trivaro-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  trivaro-network:
+    driver: bridge

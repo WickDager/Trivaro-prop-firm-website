@@ -1,0 +1,98 @@
+{
+  "name": "trivaro-backend",
+  "version": "1.0.0",
+  "description": "Trivaro Prop Firm - Backend API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "echo 'Backend build complete'",
+    "test": "jest --coverage --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:unit": "jest tests/unit --verbose",
+    "test:integration": "jest tests/integration --verbose --runInBand",
+    "test:security": "jest tests/security --verbose --runInBand",
+    "test:database": "jest tests/database --verbose",
+    "test:payment": "jest tests/payment --verbose",
+    "test:coverage": "jest --coverage --coverageReporters=text --coverageReporters=html",
+    "test:ci": "jest --coverage --ci --maxWorkers=2",
+    "test:e2e": "jest tests/e2e",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
+    "seed": "node database/seeds/index.js",
+    "migrate": "node database/migrations/run.js",
+    "backup": "node database/backup/backup.js"
+  },
+  "keywords": [
+    "prop-firm",
+    "trading",
+    "forex",
+    "api"
+  ],
+  "author": "Trivaro",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "joi": "^17.11.0",
+    "winston": "^3.11.0",
+    "morgan": "^1.10.0",
+    "cookie-parser": "^1.4.6",
+    "compression": "^1.7.4",
+    "express-validator": "^7.0.1",
+    "ioredis": "^5.3.2",
+    "socket.io": "^4.6.1",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7",
+    "@sendgrid/mail": "^8.1.0",
+    "stripe": "^14.10.0",
+    "paypal-rest-sdk": "^1.8.1",
+    "metaapi.cloud-sdk": "^1.0.0",
+    "crypto-js": "^4.2.0",
+    "uuid": "^9.0.1",
+    "express-fileupload": "^1.4.3",
+    "aws-sdk": "^2.1529.0",
+    "handlebars": "^4.7.8",
+    "pdfkit": "^0.14.0",
+    "express-session": "^1.17.3",
+    "connect-redis": "^7.1.1",
+    "csurf": "^1.11.0",
+    "xss-clean": "^0.1.4",
+    "hpp": "^0.2.3",
+    "express-mongo-sanitize": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.0",
+    "eslint-plugin-jest": "^27.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "setupFiles": [
+      "dotenv/config"
+    ]
+  }
+}
