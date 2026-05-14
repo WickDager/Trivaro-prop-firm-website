@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 40" fill="none">
+  <!-- Brandmark: Abstract "T" with upward trend -->
+  <defs>
+    <linearGradient id="brandGradient" x1="0" y1="0" x2="40" y2="40">
+      <stop offset="0%" stop-color="#00D9FF"/>
+      <stop offset="100%" stop-color="#00FF88"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: Stylized T with chart arrow -->
+  <rect x="2" y="2" width="36" height="36" rx="8" fill="url(#brandGradient)" opacity="0.15"/>
+  <rect x="2" y="2" width="36" height="36" rx="8" stroke="url(#brandGradient)" stroke-width="1.5"/>
+
+  <!-- Upward trend arrow -->
+  <path d="M12 28 L18 20 L24 22 L30 12" stroke="url(#brandGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="30" cy="12" r="2" fill="#00FF88"/>
+
+  <!-- "T" letterform -->
+  <path d="M16 10 L26 10 M21 10 L21 26" stroke="url(#brandGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Text -->
+  <text x="46" y="26" font-family="'Inter', system-ui, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" letter-spacing="-0.5">Trivaro</text>
+  <text x="46" y="36" font-family="'Inter', system-ui, sans-serif" font-size="9" font-weight="500" fill="#00D9FF" letter-spacing="2.5">PROP FIRM</text>
+</svg>

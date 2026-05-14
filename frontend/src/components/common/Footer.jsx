@@ -11,10 +11,9 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-secondary to-accent rounded-lg" />
-              <span className="text-xl font-bold text-text-primary">Trivaro</span>
-            </div>
+            <Link to="/" className="flex items-center mb-4" aria-label="Trivaro home">
+              <img src="/images/logo.svg" alt="Trivaro" className="h-8" />
+            </Link>
             <p className="text-text-secondary max-w-md">
               Professional forex trading challenges with instant funding. 
               Prove your skills and trade with our capital.
