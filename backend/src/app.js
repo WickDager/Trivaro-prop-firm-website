@@ -9,10 +9,10 @@ const compression = require('compression');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
 const hpp = require('hpp');
 
 const logger = require('./utils/logger');
+const sanitizeInput = require('./middleware/sanitize.middleware');
 const { apiLimiter } = require('./middleware/rateLimit.middleware');
 const { notFound, errorHandler } = require('./middleware/error.middleware');
 
@@ -31,7 +31,22 @@ const createApp = () => {
   const app = express();
 
   // Security middleware
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'https://api.metaapi.cloud'],
+        frameSrc: ["'none'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+      }
+    },
+    crossOriginEmbedderPolicy: false
+  }));
   app.use(cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
     credentials: true
@@ -48,7 +63,7 @@ const createApp = () => {
 
   // Data sanitization
   app.use(mongoSanitize());
-  app.use(xss());
+  app.use(sanitizeInput);
   app.use(hpp());
 
   // Logging

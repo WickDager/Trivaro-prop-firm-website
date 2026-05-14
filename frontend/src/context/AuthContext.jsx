@@ -27,19 +27,13 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('accessToken')
-    if (!token) {
-      setLoading(false)
-      return
-    }
-
     try {
       const response = await authService.getCurrentUser()
       setUser(response.data)
       setIsAuthenticated(true)
     } catch (error) {
-      console.error('Auth check failed:', error)
-      localStorage.clear()
+      setUser(null)
+      setIsAuthenticated(false)
     } finally {
       setLoading(false)
     }
@@ -62,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authService.register(userData)
-      toast.success('Registration successful! Please login.')
+      toast.success('Registration successful!')
       return response
     } catch (error) {
       const message = error.response?.data?.error?.message || 'Registration failed'

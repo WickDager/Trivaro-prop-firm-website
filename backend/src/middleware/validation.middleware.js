@@ -88,6 +88,20 @@ const updateProfileSchema = Joi.object({
 });
 
 /**
+ * Email-only schema for forgot-password
+ */
+const emailSchema = Joi.object({
+  email: Joi.string().email().required()
+});
+
+/**
+ * Refresh token schema
+ */
+const refreshTokenSchema = Joi.object({
+  refreshToken: Joi.string().optional()
+});
+
+/**
  * Password change schema
  */
 const changePasswordSchema = Joi.object({
@@ -105,6 +119,14 @@ const payoutRequestSchema = Joi.object({
   paymentDetails: Joi.object().required()
 });
 
+/**
+ * Refund schema
+ */
+const refundSchema = Joi.object({
+  transactionId: Joi.string().required(),
+  reason: Joi.string().min(3).max(500).optional()
+});
+
 module.exports = {
   validate,
   schemas: {
@@ -114,6 +136,9 @@ module.exports = {
     payment: paymentSchema,
     updateProfile: updateProfileSchema,
     changePassword: changePasswordSchema,
-    payoutRequest: payoutRequestSchema
+    payoutRequest: payoutRequestSchema,
+    email: emailSchema,
+    refreshToken: refreshTokenSchema,
+    refund: refundSchema
   }
 };

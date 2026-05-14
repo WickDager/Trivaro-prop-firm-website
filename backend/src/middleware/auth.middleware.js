@@ -12,24 +12,34 @@ const logger = require('../utils/logger');
  */
 const verifyToken = async (req, res, next) => {
   try {
-    // Get token from header
+    // Get token from header or cookie
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    let token = null;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    } else if (req.cookies?.accessToken) {
+      token = req.cookies.accessToken;
+    }
+
+    if (!token) {
       return res.status(401).json({
         success: false,
         message: 'Access token required'
       });
     }
 
-    const token = authHeader.split(' ')[1];
-
-    // Check if token is blacklisted
-    const isBlacklisted = await redisClient.exists(`blacklist:${token}`);
-    if (isBlacklisted) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token has been revoked'
-      });
+    // Check if token is blacklisted (skip check if Redis is down)
+    try {
+      const isBlacklisted = await redisClient.exists(`blacklist:${token}`);
+      if (isBlacklisted) {
+        return res.status(401).json({
+          success: false,
+          message: 'Token has been revoked'
+        });
+      }
+    } catch (redisError) {
+      logger.warn('Redis unavailable, skipping blacklist check:', redisError.message);
     }
 
     // Verify token
@@ -78,8 +88,15 @@ const checkRole = (...roles) => {
 const optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
+    let token = null;
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.split(' ')[1];
+      token = authHeader.split(' ')[1];
+    } else if (req.cookies?.accessToken) {
+      token = req.cookies.accessToken;
+    }
+
+    if (token) {
       const decoded = jwt.verifyAccessToken(token);
       req.user = decoded;
     }

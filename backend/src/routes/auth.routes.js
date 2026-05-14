@@ -12,12 +12,12 @@ const { authLimiter } = require('../middleware/rateLimit.middleware');
 // Public routes
 router.post('/register', validate(schemas.register), authController.register);
 router.post('/login', authLimiter, validate(schemas.login), authController.login);
-router.post('/forgot-password', authLimiter, authController.forgotPassword);
+router.post('/forgot-password', authLimiter, validate(schemas.email), authController.forgotPassword);
 router.post('/reset-password', validate(schemas.changePassword), authController.resetPassword);
 router.get('/verify-email/:token', authController.verifyEmail);
 
 // Protected routes
-router.post('/refresh', authController.refreshToken);
+router.post('/refresh', validate(schemas.refreshToken), authController.refreshToken);
 router.post('/logout', verifyToken, authController.logout);
 router.get('/me', verifyToken, authController.getCurrentUser);
 router.put('/profile', verifyToken, validate(schemas.updateProfile), authController.updateProfile);

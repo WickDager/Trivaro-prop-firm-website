@@ -1,7 +1,3 @@
-/**
- * Navbar Component
- */
-
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react'
@@ -19,11 +15,11 @@ export const Navbar = () => {
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-gray-800">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-gray-800" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2" aria-label="Trivaro home">
             <div className="w-8 h-8 bg-gradient-to-br from-secondary to-accent rounded-lg" />
             <span className="text-xl font-bold text-text-primary">Trivaro</span>
           </Link>
@@ -36,7 +32,7 @@ export const Navbar = () => {
             <Link to="/faq" className="text-text-secondary hover:text-text-primary transition-colors">
               FAQ
             </Link>
-            
+
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <Link to="/dashboard">
@@ -46,11 +42,11 @@ export const Navbar = () => {
                   </Button>
                 </Link>
                 <div className="relative group">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" aria-label="Account menu">
                     <User size={18} className="mr-2" />
                     {user?.firstName || 'Account'}
                   </Button>
-                  <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg border border-gray-800 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                  <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg border border-gray-800 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all">
                     <Link
                       to="/profile"
                       className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-card-hover rounded-t-lg"
@@ -83,6 +79,8 @@ export const Navbar = () => {
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-text-secondary hover:text-text-primary"
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -91,7 +89,7 @@ export const Navbar = () => {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden border-t border-gray-800 bg-background">
+        <div className="md:hidden border-t border-gray-800 bg-background" role="dialog" aria-label="Mobile navigation">
           <div className="px-4 py-4 space-y-4">
             <Link
               to="/how-it-works"
@@ -107,7 +105,7 @@ export const Navbar = () => {
             >
               FAQ
             </Link>
-            
+
             {isAuthenticated ? (
               <>
                 <Link

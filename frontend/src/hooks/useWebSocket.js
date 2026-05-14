@@ -14,15 +14,10 @@ export const useWebSocket = () => {
   const socketRef = useRef(null)
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken')
-    if (!token) return
-
-    // Connect to WebSocket server
+    // Connect to WebSocket server (token sent via cookie)
     const newSocket = io(WS_URL, {
-      auth: {
-        token,
-      },
       transports: ['websocket', 'polling'],
+      withCredentials: true,
     })
 
     newSocket.on('connect', () => {

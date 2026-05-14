@@ -1,53 +1,119 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 
 // Context Providers
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { ErrorBoundary } from './components/common/ErrorBoundary'
+import { PageLoader } from './components/common/Loader'
 
-// Pages
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import ChallengeDetails from './pages/ChallengeDetails'
-import PurchaseChallenge from './pages/PurchaseChallenge'
-import Profile from './pages/Profile'
-import AdminDashboard from './pages/AdminDashboard'
-import FAQ from './pages/FAQ'
-import HowItWorks from './pages/HowItWorks'
-import PrivacyPolicy from './pages/PrivacyPolicy'
-import TermsOfService from './pages/TermsOfService'
-import NotFound from './pages/NotFound'
-
-// Remove the default export import since we're importing individual pages
+// Lazy-loaded pages
+const Home = lazy(() => import('./pages/Home'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const ChallengeDetails = lazy(() => import('./pages/ChallengeDetails'))
+const PurchaseChallenge = lazy(() => import('./pages/PurchaseChallenge'))
+const Profile = lazy(() => import('./pages/Profile'))
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
+const FAQ = lazy(() => import('./pages/FAQ'))
+const HowItWorks = lazy(() => import('./pages/HowItWorks'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
+const TermsOfService = lazy(() => import('./pages/TermsOfService'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('accessToken')
-  
-  if (!token) {
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) return <PageLoader />
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
-  
+
   return children
 }
 
 // Admin Route Component
 const AdminRoute = ({ children }) => {
-  const token = localStorage.getItem('accessToken')
-  const userRole = localStorage.getItem('userRole')
-  
-  if (!token) {
+  const { isAuthenticated, loading, user } = useAuth()
+
+  if (loading) return <PageLoader />
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
-  
-  if (userRole !== 'admin') {
+
+  if (user?.role !== 'admin') {
     return <Navigate to="/dashboard" replace />
   }
-  
+
   return children
 }
+
+const AppRoutes = () => (
+  <Suspense fallback={<PageLoader />}>
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/how-it-works" element={<HowItWorks />} />
+      <Route path="/faq" element={<FAQ />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfService />} />
+
+      {/* Protected Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/challenges/:id"
+        element={
+          <ProtectedRoute>
+            <ChallengeDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/purchase"
+        element={
+          <ProtectedRoute>
+            <PurchaseChallenge />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Routes */}
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </Suspense>
+)
 
 function App() {
   return (
@@ -55,64 +121,10 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <div className="min-h-screen bg-background">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              
-              {/* Protected Routes */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/challenges/:id"
-                element={
-                  <ProtectedRoute>
-                    <ChallengeDetails />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/purchase"
-                element={
-                  <ProtectedRoute>
-                    <PurchaseChallenge />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              
-              {/* Admin Routes */}
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminDashboard />
-                  </AdminRoute>
-                }
-              />
-              
-              {/* 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
+
             {/* Toast Notifications */}
             <Toaster
               position="top-right"

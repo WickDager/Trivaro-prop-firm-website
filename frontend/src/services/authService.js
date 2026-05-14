@@ -19,12 +19,6 @@ class AuthService {
    */
   async login(credentials) {
     const response = await api.post('/auth/login', credentials)
-    if (response.data.success) {
-      const { accessToken, refreshToken } = response.data.data.tokens
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      localStorage.setItem('userRole', response.data.data.user.role)
-    }
     return response.data
   }
 
@@ -32,13 +26,10 @@ class AuthService {
    * Logout user
    */
   async logout() {
-    const refreshToken = localStorage.getItem('refreshToken')
     try {
-      await api.post('/auth/logout', { refreshToken })
+      await api.post('/auth/logout')
     } catch (error) {
       console.error('Logout error:', error)
-    } finally {
-      localStorage.clear()
     }
   }
 

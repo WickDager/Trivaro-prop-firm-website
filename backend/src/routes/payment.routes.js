@@ -15,7 +15,7 @@ router.use(verifyToken);
 router.post('/process', paymentLimiter, validate(schemas.payment), paymentController.processPayment);
 router.get('/transactions', paymentController.getUserTransactions);
 router.get('/transactions/:id', paymentController.getTransaction);
-router.post('/refund', paymentLimiter, paymentController.processRefund);
+router.post('/refund', paymentLimiter, validate(schemas.refund), paymentController.processRefund);
 
 // Webhook route (no auth, verified by signature)
 router.post('/webhooks/stripe', express.raw({ type: 'application/json' }), paymentController.stripeWebhook);
